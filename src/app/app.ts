@@ -1,24 +1,14 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 import { RouterOutlet } from '@angular/router';
-import { AlertService } from './services/alert';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [RouterOutlet, HttpClientModule],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
-
-export class App implements OnInit{
-  protected readonly title = signal('motorcycle-telemetry-frontend');
-
-  private alertService = inject(AlertService);
-
-  ngOnInit() {
-    this.alertService.getPendingAlerts(1).subscribe({
-    next: (data) => console.log("Alertas desde Spring Boot:", data),
-    error: (err) => console.log("Error desde la peticion:", err)
-    });
-  }
-
+export class AppComponent {
+  title = 'motorcycle-telemetry-frontend';
 }

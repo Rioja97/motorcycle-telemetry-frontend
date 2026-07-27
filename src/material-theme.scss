@@ -1,0 +1,34 @@
+// Import Angular Material core styles (required for Angular Material components)
+@use '@angular/material' as mat;
+
+// Include the core styles for Angular Material
+@include mat.core();
+
+// Define our custom CSS variables for the futuristic theme
+:root {
+  --futuristic-bg-dark: #0A0A1A;
+  --futuristic-surface: #1A1A2E;
+  --futuristic-primary: #0F0F23;
+  --futuristic-accent: #00F3FF;
+  --futuristic-warning: #FFEA00;
+  --futuristic-error: #FF006E;
+  --futuristic-success: #00FF88;
+  --futuristic-text-primary: #FFFFFF;
+  --futuristic-text-secondary: #CCCCFF;
+}
+
+// Apply base styles
+body {
+  background-color: var(--futuristic-bg-dark);
+  color: var(--futuristic-text-primary);
+  font-family: 'Space Grotesk', sans-serif;
+  margin: 0;
+  min-height: 100vh;
+}
+
+// Custom typography for headings
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}

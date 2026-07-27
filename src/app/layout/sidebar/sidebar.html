@@ -1,0 +1,38 @@
+<aside class="sidebar h-screen bg-gray-900 border-r border-gray-800 flex flex-col transition-all duration-300"
+       [class.w-64]="!collapsed()"
+       [class.w-20]="collapsed()">
+  <div class="flex items-center justify-center h-16 border-b border-gray-800">
+    <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C6.48 2 2 6.48 2 12c0 2.96 1.4 5.5 3.5 7.2L3.5 21h1l2-2 2 2h1l2-2 2 2h1l-2-2c2.1-1.5 3.5-4.04 3.5-7C21 6.48 16.52 2 12 2z"/>
+    </svg>
+  </div>
+
+  <nav class="flex-1 overflow-y-auto p-4 space-y-6">
+    <div>
+      <h3 class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden"
+          [class.block]="!collapsed()">Navegación</h3>
+      @for (item of navItems(); track item.label) {
+        <a [routerLink]="item.path"
+           class="flex items-center px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors group"
+           routerLinkActive="bg-primary/20 text-primary"
+           [title]="collapsed() ? item.label : ''">
+          <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center text-lg">{{ item.icon }}</span>
+          @if (!collapsed()) {
+            <span class="ml-3 text-sm font-medium">{{ item.label }}</span>
+          }
+        </a>
+      }
+    </div>
+  </nav>
+
+  <div class="p-4 border-t border-gray-800">
+    <button (click)="logout()"
+            class="flex items-center w-full px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+            [title]="collapsed() ? 'Cerrar sesión' : ''">
+      <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center text-lg">🚪</span>
+      @if (!collapsed()) {
+        <span class="ml-3 text-sm font-medium">Cerrar sesión</span>
+      }
+    </button>
+  </div>
+</aside>

@@ -1,0 +1,25 @@
+<div class="p-4">
+  @if (loading()) {
+    <div class="flex items-center space-x-2 text-mec-muted">
+      <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+      <span>Cargando alertas…</span>
+    </div>
+  } @else if (alerts().length === 0) {
+    <p class="text-mec-muted">No hay alertas pendientes.</p>
+  } @else {
+    <div class="space-y-4">
+      @for (alert of alerts(); track alert.id) {
+        <div class="bg-gray-800 border border-gray-700 rounded p-4 shadow flex justify-between items-start">
+          <div>
+            <h3 class="font-semibold text-white">{{ alert.componentName }}</h3>
+            <p class="text-sm text-mec-muted">{{ alert.message }}</p>
+          </div>
+          <button
+            class="px-3 py-1 bg-primary hover:bg-primary/90 text-white rounded transition-colors"
+            (click)="resolve(alert.id)"
+          >Marcar como leída</button>
+        </div>
+      }
+    </div>
+  }
+</div>

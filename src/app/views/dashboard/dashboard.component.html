@@ -1,0 +1,28 @@
+<div class="p-4">
+  @if (report()) {
+    <div class="mb-4">
+      <h1 class="text-2xl font-bold">
+        {{ report()?.motorbikeInfo }}
+      </h1>
+      <p class="text-sm text-mec-muted">
+        Odómetro: {{ report()?.currentKm }} km
+      </p>
+    </div>
+
+    <nav class="flex space-x-4 mb-6 border-b border-mec-muted pb-2">
+      @for (tab of tabs(); track tab.label) {
+        <a
+          [routerLink]="['/motorbike', bikeId(), tab.path]"
+          routerLinkActive="text-primary font-semibold"
+          class="text-mec-muted hover:text-primary"
+        >{{ tab.label }}</a>
+      }
+    </nav>
+
+    <router-outlet></router-outlet>
+  } @else {
+    <div class="text-center py-8">
+      <p class="text-mec-muted">Cargando datos del vehículo…</p>
+    </div>
+  }
+</div>

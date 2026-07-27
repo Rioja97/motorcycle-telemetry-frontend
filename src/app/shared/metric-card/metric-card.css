@@ -1,0 +1,121 @@
+.metric-card {
+  background: var(--color-surface-variant);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--color-primary);
+}
+
+.metric-card.warning {
+  border-left: 3px solid var(--color-warning);
+  background: rgba(255, 214, 0, 0.03);
+}
+
+.metric-card.critical {
+  border-left: 3px solid var(--color-error);
+  background: rgba(255, 107, 107, 0.03);
+}
+
+.metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.metric-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-status mat-icon {
+  font-size: 1.25rem;
+  width: 24px;
+  height: 24px;
+}
+
+.metric-status mat-icon.warning { color: var(--color-warning); }
+.metric-status mat-icon.critical { color: var(--color-error); }
+.metric-status mat-icon.check_circle_outline { color: var(--color-success); }
+
+.metric-value {
+  font-size: 2.5rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-text-primary);
+  margin: var(--space-3) 0;
+  display: flex;
+  align-items: baseline;
+}
+
+.metric-value.inverse { 
+  /* For indicators where low is bad (battery) */
+  /* Logic is handled in component for threshold colors */
+}
+
+.metric-unit {
+  font-size: 1rem;
+  margin-left: var(--space-1);
+  color: var(--color-text-secondary);
+  vertical-align: super;
+}
+
+.metric-indicator {
+  margin-top: var(--space-3);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.indicator-track {
+  height: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  margin: var(--space-2) 0;
+  overflow: hidden;
+}
+
+.indicator-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.indicator-fill.warning { background: var(--color-warning); }
+.indicator-fill.critical { background: var(--color-error); }
+
+.indicator-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .metric-card {
+    padding: var(--space-4);
+  }
+  
+  .metric-title {
+    font-size: 0.75rem;
+  }
+  
+  .metric-value {
+    font-size: 2rem;
+  }
+  
+  .metric-unit {
+    font-size: 0.875rem;
+  }
+}

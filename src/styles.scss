@@ -1,0 +1,172 @@
+:root {
+  --color-surface: #0A0A0A;
+  --color-surface-variant: #1E1E1E;
+  --color-primary: #00F3FF;
+  --color-primary-hover: #00E6E6;
+  --color-primary-active: #00CCCC;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #E0E0E0;
+  --color-text-muted: #9E9E9E;
+  --color-border: #2A2A2A;
+  --color-success: #00C853;
+  --color-warning: #FFD600;
+  --color-error: #FF6B6B;
+  --color-chart-grid: #2A2A2A;
+  --color-chart-axis: #FFFFFF;
+  
+  /* Typography */
+  --font-family-primary: 'Inter var', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --font-family-display: 'Space Grotesk', sans-serif;
+  
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  
+  /* Enhanced shadows for depth */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+  
+  /* Transition durations */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Override Angular Material variables */
+$mat-primary: var(--color-primary) !default;
+$mat-accent: var(--color-warning) !default;
+$mat-warn: var(--color-error) !default;
+
+/* Custom Material theme overrides */
+.mat-toolbar {
+  background: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.mat-card {
+  background: var(--color-surface-variant) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.mat-button {
+  --mat-button-focus-overlay: rgba(0, 243, 255, 0.1);
+  --mat-button-hover-overlay: rgba(0, 243, 255, 0.05);
+  --mat-button-pressed-overlay: rgba(0, 243, 255, 0.15);
+}
+
+.mat-form-field {
+  .mat-form-field-flex {
+    background: var(--color-surface) !important;
+  }
+  
+  .mat-form-field-label {
+    color: var(--color-text-muted) !important;
+  }
+  
+  .mat-form-field-underline {
+    background-color: var(--color-border) !important;
+  }
+  
+  .mat-form-field-ripple {
+    background-color: var(--color-primary) !important;
+  }
+  
+  &.mat-form-field-focused {
+    .mat-form-field-underline {
+      background-color: var(--color-primary) !important;
+    }
+  }
+}
+
+.mat-paginator,
+.mat-sort-header,
+.mat-checkbox {
+  --mat-primary: var(--color-primary);
+}
+
+/* Global transitions */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-duration: var(--transition-normal);
+  transition-timing-function: var(--transition-normal);
+}
+
+/* Faster transitions for interactive elements */
+.btn-primary,
+.icon-btn,
+.nav-item {
+  transition-duration: var(--transition-fast);
+}
+
+.metric-card,
+.data-table tbody tr {
+  transition-duration: var(--transition-normal);
+}
+
+/* Skeleton loader */
+.skeleton-loader {
+  background: var(--color-surface-variant);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  animation: pulse var(--transition-slow) ease-in-out infinite;
+}
+
+.skeleton-line {
+  height: 12px;
+  background: var(--color-border);
+  margin: 8px 0;
+  border-radius: 2px;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.4; }
+}

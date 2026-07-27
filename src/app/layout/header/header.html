@@ -1,0 +1,22 @@
+<header class="bg-gray-900 text-white p-4 flex justify-between items-center">
+  <div class="flex items-center space-x-2">
+    <!-- Brand Logo -->
+    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C6.48 2 2 6.48 2 12c0 2.96 1.4 5.5 3.5 7.2L3.5 21h1l2-2 2 2h1l2-2 2 2h1l2-2 2 2h1l-2-2c2.1-1.5 3.5-4.04 3.5-7C21 6.48 16.52 2 12 2z"/>
+    </svg>
+    <span class="text-xl font-bold">MotoTelemetry</span>
+  </div>
+
+  <div class="relative">
+    <button class="flex items-center space-x-1" (click)="toggleMenu()">
+      @if (user()) { <span>{{ user()?.name }}</span> }
+      <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z" clip-rule="evenodd"/></svg>
+    </button>
+    @if (showMenu()) {
+      <div class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg">
+        <a class="block px-4 py-2 hover:bg-gray-700" (click)="goToProfile()">Perfil</a>
+        <button class="w-full text-left px-4 py-2 hover:bg-gray-700" (click)="logout()">Cerrar sesión</button>
+      </div>
+    }
+  </div>
+</header>

@@ -1,0 +1,5 @@
+// Import our futuristic theme
+@use './app/theme/futuristic-theme' as *;
+
+// The futuristic theme already applies all component themes
+// No need to include anything else here

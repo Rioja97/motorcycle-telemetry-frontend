@@ -1,1 +1,28 @@
-/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global dark mode */
+html, body {
+  @apply bg-mec-bg text-white antialiased;
+}
+
+/* Focus visible for accessibility */
+*:focus-visible {
+  @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-mec-bg;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-mec-bg;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-mec-gray rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-mec-muted;
+}

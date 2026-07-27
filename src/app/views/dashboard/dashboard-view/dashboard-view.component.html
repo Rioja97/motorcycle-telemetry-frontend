@@ -1,0 +1,22 @@
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  @if (report()) {
+    @for (comp of report().componentsHealth; track comp.componentName) {
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-4 shadow">
+        <h3 class="font-semibold mb-2 text-white">{{ comp.componentName }}</h3>
+        <p class="text-sm text-mec-muted mb-2">Estado: <span class="font-medium" [class.text-mec-green]="comp.status === 'OK'" [class.text-mec-yellow]="comp.status === 'WARNING'" [class.text-mec-red]="comp.status === 'REPLACE'">{{ comp.status }}</span></p>
+        <div class="w-full bg-gray-700 rounded-full h-2.5 mb-2">
+          <div
+            class="h-2.5 rounded-full"
+            [style.width.%]="(comp.remainingKm / comp.lifespanKm) * 100"
+            [class.bg-mec-green]="comp.status === 'OK'"
+            [class.bg-mec-yellow]="comp.status === 'WARNING'"
+            [class.bg-mec-red]="comp.status === 'REPLACE'"
+          ></div>
+        </div>
+        <p class="text-xs text-mec-muted">{{ comp.remainingKm }} km restantes / {{ comp.lifespanKm }} km vida útil</p>
+      </div>
+    }
+  } @else {
+    <p class="text-mec-muted col-span-full">Cargando componentes…</p>
+  }
+</div>

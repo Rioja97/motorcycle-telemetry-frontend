@@ -1,0 +1,158 @@
+// Futuristic Theme for Motorcycle Telemetry App
+// Simple approach: override Material theme colors with CSS variables
+
+// Import Angular Material theming
+@use '@angular/material' as mat;
+
+// Define our color palette
+$futuristic-primary: #0F0F23;         // Cosmic black-blue (primary)
+$futuristic-accent: #00F3FF;          // Electric cyan (accent)
+$futuristic-warn: #FFEA00;            // Solar flare yellow (warning)
+$futuristic-background: #0A0A1A;      // Deep space black-blue
+$futuristic-surface: #1A1A2E;         // Dark nebula surface
+
+// Create a custom theme using the defined colors
+$futuristic-theme: mat.define-light-theme((
+  color: (
+    primary: $futuristic-primary,
+    accent: $futuristic-accent,
+    warn: $futuristic-warn,
+    background: (
+      default: $futuristic-background,
+      paper: $futuristic-surface
+    )
+  )
+));
+
+// Apply the theme
+html {
+  height: 100%;
+  @include mat.all-component-themes($futuristic-theme);
+  
+  // Export CSS variables for custom use
+  --futuristic-bg-dark: #{$futuristic-background};
+  --futuristic-surface: #{$futuristic-surface};
+  --futuristic-primary: #{$futuristic-primary};
+  --futuristic-accent: #{$futuristic-accent};
+  --futuristic-warning: #{$futuristic-warn};
+  --futuristic-error: #FF006E;        // Nebula magenta (error)
+  --futuristic-success: #00FF88;      // Alien green (success)
+  --futuristic-text-primary: #FFFFFF; // Stellar white
+  --futuristic-text-secondary: #CCCCFF; // Nebula haze
+}
+
+// Base styles
+body {
+  color-scheme: dark;
+  background-color: var(--futuristic-bg-dark);
+  color: var(--futuristic-text-primary);
+  margin: 0;
+  height: 100%;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+// Custom fonts for headings
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+}
+
+// Component customizations
+.mat-mdc-button {
+  --mdc-theme-primary: var(--futuristic-accent);
+  --mdc-theme-on-primary: var(--futuristic-bg-dark);
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.mat-mdc-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 243, 255, 0.4);
+}
+
+.mat-mdc-button:active {
+  transform: translateY(0);
+}
+
+.mat-mdc-fab {
+  --mdc-theme-primary: var(--futuristic-accent);
+  --mdc-theme-on-primary: var(--futuristic-bg-dark);
+}
+
+.mat-mdc-icon-button {
+  --mdc-theme-primary: var(--futuristic-accent);
+  --mdc-theme-on-primary: var(--futuristic-bg-dark);
+  border-radius: 50%;
+}
+
+// Form fields
+.mat-mdc-form-field {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.mat-mdc-input-container {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+// Checkbox and radio
+.mat-mdc-checkbox .mat-mdc-checkbox-background {
+  background-color: var(--futuristic-surface);
+  border-color: var(--futuristic-accent);
+}
+
+.mat-mdc-checkbox .mat-mdc-checkbox-checkmark-path {
+  stroke: var(--futuristic-accent);
+}
+
+// Glassmorphism effect for cards/panels
+.futuristic-card {
+  background: rgba(26, 26, 46, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 243, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 243, 255, 0.15);
+  border-radius: 16px;
+}
+
+// Glowing effects
+.futuristic-glow {
+  box-shadow: 
+    0 0 10px rgba(0, 243, 255, 0.5),
+    0 0 20px rgba(0, 243, 255, 0.3),
+    0 0 30px rgba(0, 243, 255, 0.2);
+}
+
+.futuristic-border {
+  border: 1px solid rgba(0, 243, 255, 0.3);
+  box-shadow: 0 0 8px rgba(0, 243, 255, 0.2);
+}
+
+// Scrollbar styling
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--futuristic-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--futuristic-accent);
+  border-radius: 4px;
+  border: 2px solid var(--futuristic-surface);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00cce6;
+}
+
+// Transitions
+* {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}

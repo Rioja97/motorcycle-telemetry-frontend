@@ -1,0 +1,39 @@
+<div class="p-4 bg-mec-bg min-h-screen text-white">
+  <h1 class="text-2xl font-bold mb-6">Flota de Motocicletas</h1>
+
+  @if (loading()) {
+    <div class="flex items-center justify-center py-8">
+      <svg class="animate-spin h-6 w-6 text-primary mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+      </svg>
+      <span>Cargando motocicletas…</span>
+    </div>
+  } @else if (motorbikes().length === 0) {
+    <div class="text-center py-8">
+      <p class="text-mec-muted">No hay motocicletas registradas.</p>
+      <button class="mt-4 px-4 py-2 bg-primary hover:bg-primary/90 rounded" (click)="openNewMotorbikePrompt()">
+        + Registrar Moto
+      </button>
+    </div>
+  } @else {
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      @for (bike of motorbikes(); track bike.id) {
+        <app-garage-card
+          [motorbike]="bike"
+          (navigate)="goToDashboard($event)"
+          (updateKm)="updateKm($event.id, $event.km)"
+        ></app-garage-card>
+      }
+    </div>
+  }
+
+  <!-- Botón flotante para nueva moto -->
+  <button
+    class="fixed bottom-6 right-6 bg-primary hover:bg-primary/90 text-white p-4 rounded-full shadow-lg"
+    (click)="openNewMotorbikePrompt()"
+    aria-label="Nueva Moto"
+  >
+    +
+  </button>
+</div>

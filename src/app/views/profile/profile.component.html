@@ -1,0 +1,11 @@
+<section class="p-6 max-w-2xl mx-auto">
+  <h2 class="text-2xl font-bold mb-4">Perfil del Usuario</h2>
+  @if (user()) {
+    <div class="bg-gray-800 p-4 rounded">
+      <p><strong>Nombre:</strong> {{ user()?.name }}</p>
+      <p><strong>Email:</strong> {{ user()?.email }}</p>
+    </div>
+  } @else {
+    <p class="text-gray-400">No hay usuario logueado.</p>
+  }
+</section>

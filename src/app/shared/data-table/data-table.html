@@ -1,0 +1,45 @@
+<table class="data-table" *ngIf="data.length > 0; else emptyState">
+  <thead>
+    <tr>
+      <th *ngFor="let column of displayedColumns"
+          (click)="onSortChange(column.key)"
+          [class.sort-active]="sortDisplayedColumns().includes(column)"
+          class="sortable">
+        <div class="th-content">
+          {{ column.label }}
+          <span class="sort-indicator" *ngIf="column.sortable">
+            <mat-icon>{{ getSortIcon(column.key) }}</mat-icon>
+          </span>
+        </div>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of pagedData" class="data-row" (click)="onRowClick(row)">
+      <td *ngFor="let column of displayedColumns">
+        <div class="td-content">
+          {{ formatValue(getPropertyValue(row, column.key), column.format) }}
+<span class="cell-status" *ngIf="getCellStatus(row, column.key)">
+              <mat-icon>{{ getCellStatusIcon(row, column.key) }}</mat-icon>
+            </span>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<ng-template #emptyState>
+  <div class="empty-state">
+    <mat-icon>inbox</mat-icon>
+    <p>No data available</p>
+  </div>
+</ng-template>
+
+<div class="pagination" *ngIf="showPaginator && data.length > pageSize">
+  <mat-paginator [length]="data.length"
+                 [pageSizeOptions]="pageSizeOptions"
+                 [pageSize]="pageSize"
+                 [pageIndex]="pageIndex"
+                 (page)="onPageChange($event)">
+  </mat-paginator>
+</div>

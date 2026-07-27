@@ -1,0 +1,119 @@
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--color-surface-variant);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.data-table th,
+.data-table td {
+  padding: var(--space-4) var(--space-5);
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.data-table th {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  position: relative;
+  cursor: pointer;
+}
+
+.data-table th:hover {
+  background: rgba(0, 243, 255, 0.05);
+}
+
+.data-table th.sort-active {
+  background: rgba(0, 243, 255, 0.08);
+}
+
+.data-table td {
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.data-table tbody tr:hover {
+  background: rgba(0, 243, 255, 0.03);
+}
+
+.data-table tbody tr.active {
+  background: rgba(0, 243, 255, 0.08);
+  border-left: 3px solid var(--color-primary);
+}
+
+.th-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.sort-indicator {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.data-table th:hover .sort-indicator,
+.data-table th.sort-active .sort-indicator {
+  opacity: 1;
+}
+
+.td-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.cell-status {
+  font-size: 0.75rem;
+}
+
+.cell-status mat-icon.success { color: var(--color-success); }
+.cell-status mat-icon.warning { color: var(--color-warning); }
+.cell-status mat-icon.error { color: var(--color-error); }
+
+.empty-state {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  color: var(--color-text-muted);
+}
+
+.empty-state mat-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-3);
+  color: var(--color-border);
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Pagination */
+.pagination {
+  margin-top: var(--space-4);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .data-table th,
+  .data-table td {
+    padding: var(--space-3) var(--space-4);
+    font-size: 0.75rem;
+  }
+  
+  .pagination {
+    flex-wrap: wrap;
+  }
+}

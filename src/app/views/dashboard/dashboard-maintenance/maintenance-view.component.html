@@ -1,0 +1,65 @@
+<div class="p-4 space-y-8">
+  <section class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow">
+    <h2 class="text-xl font-bold mb-4">Instalar nuevo componente</h2>
+    @if (loadingCatalog()) {
+      <p class="text-mec-muted">Cargando catálogo...</p>
+    } @else {
+      <form (ngSubmit)="installComponent()" class="grid gap-4">
+        <div>
+          <label class="block text-sm font-medium text-mec-muted">Componente</label>
+          <select class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                  [(ngModel)]="selectedComponentId" name="componentSelect">
+            <option [ngValue]="null">Seleccione...</option>
+            @for (c of catalog(); track c.id) {
+              <option [ngValue]="c.id">{{ c.name }} ({{ c.lifespanKm }} km)</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-mec-muted">Kilometraje de instalación</label>
+          <input type="number" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                 [(ngModel)]="installationMileage" name="km">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-mec-muted">Fecha de instalación</label>
+          <input type="date" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                 [(ngModel)]="installationDate" name="date">
+        </div>
+        <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded transition-colors"
+                [disabled]="installing()">
+          @if (installing()) { Instalando... } @else { Instalar }
+        </button>
+      </form>
+    }
+  </section>
+
+  <section class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow">
+    <h2 class="text-xl font-bold mb-4">Registrar mantenimiento</h2>
+    <form (ngSubmit)="registerMaintenance()" class="grid gap-4">
+      <div>
+        <label class="block text-sm font-medium text-mec-muted">Componente instalado (ID)</label>
+        <input type="number" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+               [(ngModel)]="installedComponentId" name="installedId">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-mec-muted">Kilometraje actual</label>
+        <input type="number" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+               [(ngModel)]="maintenanceKm" name="km">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-mec-muted">Fecha de mantenimiento</label>
+        <input type="date" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+               [(ngModel)]="maintenanceDate" name="date">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-mec-muted">Descripción</label>
+        <textarea class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                  [(ngModel)]="description" name="desc"></textarea>
+      </div>
+      <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded transition-colors"
+              [disabled]="maintaining()">
+        @if (maintaining()) { Registrando... } @else { Registrar mantenimiento }
+      </button>
+    </form>
+  </section>
+</div>

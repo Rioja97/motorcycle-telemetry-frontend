@@ -40,9 +40,11 @@ export class GarageComponent {
     const model = window.prompt('Modelo');
     const yearStr = window.prompt('Año');
     const year = yearStr ? Number(yearStr) : undefined;
+    const kmStr = window.prompt('Kilometraje actual');
+    const currentKm = kmStr ? Number(kmStr) : 0;
     if (brand && model && year) {
       this.motorbikeService
-        .createMotorbike({ brand, model, year })
+        .createMotorbike({ brand, model, year, currentKm, initialMileage: 0 })
         .subscribe({
           next: () => this.motorbikeService.loadMotorbikes(),
           error: (err) => console.error('Error creating motorbike', err),

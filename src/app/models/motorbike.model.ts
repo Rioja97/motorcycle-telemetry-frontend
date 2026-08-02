@@ -3,6 +3,8 @@ export interface MotorbikeDTO {
   brand: string;
   model: string;
   year: number;
+  currentKm: number;
+  initialMileage: number;
 }
 
 export interface MileageUpdateDTO {

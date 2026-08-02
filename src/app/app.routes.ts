@@ -3,6 +3,7 @@ import { GarageComponent } from './views/garage/garage.component';
 import { MainLayoutComponent } from './layout/main-layout/main-layout';
 import { LoginComponent } from './views/auth/login.component';
 import { authGuard } from './guards/auth.guard';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -12,6 +13,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: '', component: GarageComponent },
+      {
+        path: 'flota',
+        loadComponent: () => import('./views/fleet/fleet.component').then(m => m.FleetComponent),
+        canActivate: [adminGuard]
+      },
       { path: 'perfil', loadComponent: () => import('./views/profile/profile.component').then(m => m.ProfileComponent) },
         {
           path: 'motorbike/:id',

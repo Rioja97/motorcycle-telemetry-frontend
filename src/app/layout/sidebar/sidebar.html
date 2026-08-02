@@ -22,6 +22,17 @@
           }
         </a>
       }
+      @if (isAdmin()) {
+        <a routerLink="/flota"
+           class="flex items-center px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors group"
+           routerLinkActive="bg-primary/20 text-primary"
+           [title]="collapsed() ? 'Flota general' : ''">
+          <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center text-lg">📋</span>
+          @if (!collapsed()) {
+            <span class="ml-3 text-sm font-medium">Flota general</span>
+          }
+        </a>
+      }
     </div>
   </nav>
 

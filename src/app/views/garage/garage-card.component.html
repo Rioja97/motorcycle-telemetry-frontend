@@ -1,6 +1,7 @@
-<div class="bg-gray-800 border border-gray-700 p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer" (click)="goToDetail()">
+<div class="bg-gray-800 border border-gray-700 p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow" (click)="goToDetail()">
   <h2 class="text-xl font-semibold mb-2">{{ motorbike.brand }} {{ motorbike.model }}</h2>
-  <p class="text-sm text-mec-muted mb-4">Año: {{ motorbike.year }}</p>
+  <p class="text-sm text-mec-muted mb-2">Año: {{ motorbike.year }}</p>
+  <p class="text-sm text-mec-muted mb-4">Kilometraje: {{ motorbike.currentKm | number }} km</p>
 
   <div class="flex items-center space-x-2 mb-2">
     <input
@@ -8,12 +9,22 @@
       class="w-20 p-1 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-primary"
       [ngModel]="kmInput()" (ngModelChange)="kmInput.set($event)"
       placeholder="km"
+      (click)="$event.stopPropagation()"
     />
     <button
       class="px-3 py-1 bg-primary hover:bg-primary/90 text-white rounded transition-colors"
       (click)="submitKm(); $event.stopPropagation()"
     >
       Actualizar KM
+    </button>
+  </div>
+
+  <div class="flex justify-end">
+    <button
+      class="px-3 py-1 text-xs bg-red-600 hover:bg-red-500 text-white rounded transition-colors"
+      (click)="delete.emit(motorbike.id); $event.stopPropagation()"
+    >
+      Eliminar
     </button>
   </div>
 </div>

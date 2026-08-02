@@ -1,0 +1,130 @@
+<div class="p-4 bg-mec-bg min-h-screen text-white">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+    <h1 class="text-2xl font-bold">Flota General</h1>
+    <div class="flex items-center gap-2">
+      <input
+        type="text"
+        placeholder="Buscar por marca, modelo, propietario..."
+        class="w-64 p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+      />
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="flex items-center justify-center py-8">
+      <svg class="animate-spin h-6 w-6 text-primary mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+      </svg>
+      <span>Cargando flota...</span>
+    </div>
+  } @else if (filteredMotorbikes().length === 0) {
+    <div class="text-center py-8">
+      <p class="text-mec-muted">No hay motocicletas registradas.</p>
+    </div>
+  } @else {
+    <div class="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-gray-700">
+            <th class="px-4 py-3 text-left text-sm font-semibold text-mec-muted">Marca</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-mec-muted">Modelo</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-mec-muted">Año</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-mec-muted">Kilometraje</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-mec-muted">Propietario</th>
+            <th class="px-4 py-3 text-right text-sm font-semibold text-mec-muted">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (bike of filteredMotorbikes(); track bike.id) {
+            <tr class="border-b border-gray-700 hover:bg-gray-700/50 transition-colors">
+              <td class="px-4 py-3 text-sm">{{ bike.brand }}</td>
+              <td class="px-4 py-3 text-sm">{{ bike.model }}</td>
+              <td class="px-4 py-3 text-sm">{{ bike.year }}</td>
+              <td class="px-4 py-3 text-sm">{{ bike.currentKm | number }}</td>
+              <td class="px-4 py-3 text-sm text-mec-muted">{{ bike.userEmail }}</td>
+              <td class="px-4 py-3 text-sm text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <button
+                    class="px-3 py-1 text-xs bg-primary hover:bg-primary/90 text-white rounded transition-colors"
+                    (click)="openEditModal(bike)"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    class="px-3 py-1 text-xs bg-red-600 hover:bg-red-500 text-white rounded transition-colors"
+                    (click)="openDeleteConfirm(bike.id)"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Edit Modal -->
+  @if (showEditModal()) {
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" (click)="closeEditModal()">
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-md" (click)="$event.stopPropagation()">
+        <h2 class="text-xl font-bold mb-4">Editar Motocicleta</h2>
+        <form (ngSubmit)="submitEdit()" class="grid gap-4">
+          <div>
+            <label class="block text-sm font-medium text-mec-muted">Marca</label>
+            <input type="text" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                   [(ngModel)]="editForm.brand" name="brand" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-mec-muted">Modelo</label>
+            <input type="text" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                   [(ngModel)]="editForm.model" name="model" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-mec-muted">Año</label>
+            <input type="number" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                   [(ngModel)]="editForm.year" name="year" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-mec-muted">Kilometraje</label>
+            <input type="number" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                   [(ngModel)]="editForm.currentKm" name="km" required>
+          </div>
+          <div class="flex gap-2 justify-end">
+            <button type="button" class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded"
+                    (click)="closeEditModal()">
+              Cancelar
+            </button>
+            <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded">
+              Guardar cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Delete Confirmation Modal -->
+  @if (showDeleteConfirm()) {
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" (click)="closeDeleteConfirm()">
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-md" (click)="$event.stopPropagation()">
+        <h2 class="text-xl font-bold mb-4">Eliminar Motocicleta</h2>
+        <p class="text-mec-muted mb-6">¿Estás seguro de que quieres eliminar esta motocicleta? Esta acción no se puede deshacer.</p>
+        <div class="flex gap-2 justify-end">
+          <button class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded"
+                  (click)="closeDeleteConfirm()">
+            Cancelar
+          </button>
+          <button class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded"
+                  (click)="confirmDelete()">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

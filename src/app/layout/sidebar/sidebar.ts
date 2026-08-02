@@ -1,4 +1,4 @@
-import { Component, Input, signal, inject } from '@angular/core';
+import { Component, Input, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
@@ -18,6 +18,7 @@ export class SidebarComponent {
   }
 
   collapsed = signal(false);
+  isAdmin = computed(() => this.auth.isAdmin());
 
   // Navigation items
   navItems = signal([

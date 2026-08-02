@@ -5,6 +5,8 @@ export interface MotorbikeDTO {
   year: number;
   currentKm: number;
   initialMileage: number;
+  userEmail?: string;
+  userRole?: 'USER' | 'ADMIN';
 }
 
 export interface MileageUpdateDTO {

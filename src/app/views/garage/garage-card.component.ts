@@ -13,6 +13,7 @@ export class GarageCardComponent {
   @Input() motorbike!: MotorbikeDTO;
   @Output() navigate = new EventEmitter<number>();
   @Output() updateKm = new EventEmitter<{ id: number; km: number }>();
+  @Output() delete = new EventEmitter<number>();
 
   // local signal for the km input field
   kmInput = signal<number>(0);

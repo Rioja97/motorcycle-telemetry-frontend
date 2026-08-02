@@ -1,6 +1,45 @@
 <div class="p-4 bg-mec-bg min-h-screen text-white">
   <h1 class="text-2xl font-bold mb-6">Flota de Motocicletas</h1>
 
+  <!-- Formulario de creación (si showForm es true) -->
+  @if (showForm()) {
+    <section class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow mb-6">
+      <h2 class="text-xl font-bold mb-4">Registrar nueva motocicleta</h2>
+      <form (ngSubmit)="createMotorbike()" class="grid gap-4">
+        <div>
+          <label class="block text-sm font-medium text-mec-muted">Marca</label>
+          <input type="text" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                 [(ngModel)]="newBike.brand" name="brand" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-mec-muted">Modelo</label>
+          <input type="text" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                 [(ngModel)]="newBike.model" name="model" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-mec-muted">Año</label>
+          <input type="number" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                 [(ngModel)]="newBike.year" name="year" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-mec-muted">Kilometraje inicial</label>
+          <input type="number" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                 [(ngModel)]="newBike.currentKm" name="km" required>
+        </div>
+        <div class="flex gap-2">
+            <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded transition-colors"
+                    [disabled]="isCreating()">
+              @if (isCreating()) { Registrando... } @else { Registrar }
+            </button>
+            <button type="button" class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded transition-colors"
+                    (click)="showForm.set(false)">
+              Cancelar
+            </button>
+        </div>
+      </form>
+    </section>
+  }
+
   @if (loading()) {
     <div class="flex items-center justify-center py-8">
       <svg class="animate-spin h-6 w-6 text-primary mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -12,7 +51,7 @@
   } @else if (motorbikes().length === 0) {
     <div class="text-center py-8">
       <p class="text-mec-muted">No hay motocicletas registradas.</p>
-      <button class="mt-4 px-4 py-2 bg-primary hover:bg-primary/90 rounded" (click)="openNewMotorbikePrompt()">
+      <button class="mt-4 px-4 py-2 bg-primary hover:bg-primary/90 rounded" (click)="showForm.set(true)">
         + Registrar Moto
       </button>
     </div>
@@ -23,17 +62,40 @@
           [motorbike]="bike"
           (navigate)="goToDashboard($event)"
           (updateKm)="updateKm($event.id, $event.km)"
+          (delete)="openDeleteConfirm($event)"
         ></app-garage-card>
       }
     </div>
   }
 
   <!-- Botón flotante para nueva moto -->
-  <button
-    class="fixed bottom-6 right-6 bg-primary hover:bg-primary/90 text-white p-4 rounded-full shadow-lg"
-    (click)="openNewMotorbikePrompt()"
-    aria-label="Nueva Moto"
-  >
-    +
-  </button>
+  @if (!showForm()) {
+    <button
+      class="fixed bottom-6 right-6 bg-primary hover:bg-primary/90 text-white p-4 rounded-full shadow-lg"
+      (click)="showForm.set(true)"
+      aria-label="Nueva Moto"
+    >
+      +
+    </button>
+  }
+
+  <!-- Delete Confirmation Modal -->
+  @if (showDeleteConfirm()) {
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" (click)="closeDeleteConfirm()">
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-md" (click)="$event.stopPropagation()">
+        <h2 class="text-xl font-bold mb-4">Eliminar Motocicleta</h2>
+        <p class="text-mec-muted mb-6">¿Estás seguro de que quieres eliminar esta motocicleta? Esta acción no se puede deshacer.</p>
+        <div class="flex gap-2 justify-end">
+          <button class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded"
+                  (click)="closeDeleteConfirm()">
+            Cancelar
+          </button>
+          <button class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded"
+                  (click)="confirmDelete()">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

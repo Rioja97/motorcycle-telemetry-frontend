@@ -1,12 +1,15 @@
 import { Routes } from '@angular/router';
 import { GarageComponent } from './views/garage/garage.component';
 import { MainLayoutComponent } from './layout/main-layout/main-layout';
-import { DashboardComponent } from './views/dashboard/dashboard.component';
+import { LoginComponent } from './views/auth/login.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
+  { path: 'login', component: LoginComponent },
   {
     path: '',
     component: MainLayoutComponent,
+    canActivate: [authGuard],
     children: [
       { path: '', component: GarageComponent },
       { path: 'perfil', loadComponent: () => import('./views/profile/profile.component').then(m => m.ProfileComponent) },

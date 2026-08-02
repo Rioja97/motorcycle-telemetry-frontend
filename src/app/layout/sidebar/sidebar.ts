@@ -24,6 +24,7 @@ export class SidebarComponent {
   navItems = signal([
     { label: 'Garaje', path: '/', icon: '🏍️' },
     { label: 'Perfil', path: '/perfil', icon: '👤' },
+    { label: 'Componentes', path: '/componentes', icon: '🔧' },
     { label: 'Configuración', path: '/settings', icon: '⚙️' },
   ]);
 

@@ -33,6 +33,7 @@ export interface CatalogComponent {
   id: number;
   name: string;
   lifespanKm: number;
+  installedComponents?: any[];
 }
 
 export interface InstallationRequestDTO {

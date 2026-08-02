@@ -19,6 +19,10 @@ export const routes: Routes = [
         canActivate: [adminGuard]
       },
       { path: 'perfil', loadComponent: () => import('./views/profile/profile.component').then(m => m.ProfileComponent) },
+      {
+        path: 'componentes',
+        loadComponent: () => import('./views/catalog/catalog-view.component').then(m => m.CatalogViewComponent),
+      },
         {
           path: 'motorbike/:id',
           loadComponent: () => import('./views/dashboard/dashboard.component').then(m => m.DashboardComponent),

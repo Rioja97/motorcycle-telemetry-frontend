@@ -28,8 +28,8 @@ export class DashboardComponent {
   // Tabs definition (label and relative route)
   tabs = signal([
     { label: 'Dashboard', path: '' },
-    { label: 'Alertas', path: 'alerts' },
-    { label: 'Mantenimiento', path: 'maintenance' },
+    { label: 'Alertas', path: 'alertas' },
+    { label: 'Mantenimiento', path: 'mantenimiento' },
   ]);
 
   constructor() {

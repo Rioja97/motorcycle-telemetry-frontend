@@ -1,29 +1,40 @@
-<div class="bg-gray-800 border border-gray-700 p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow" (click)="goToDetail()">
-  <h2 class="text-xl font-semibold mb-2">{{ motorbike.brand }} {{ motorbike.model }}</h2>
-  <p class="text-sm text-mec-muted mb-2">Año: {{ motorbike.year }}</p>
-  <p class="text-sm text-mec-muted mb-4">Kilometraje: {{ motorbike.currentKm | number }} km</p>
+<div class="bg-gray-800 border rounded-lg p-3 shadow-lg hover:shadow-xl transition-all cursor-pointer group"
+     [class.border-green-500/50]="status === 'ok'"
+     [class.border-yellow-500/50]="status === 'warning'"
+     [class.border-red-500/50]="status === 'critical'"
+     (click)="goToDetail()">
 
-  <div class="flex items-center space-x-2 mb-2">
-    <input
-      type="number"
-      class="w-20 p-1 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-primary"
-      [ngModel]="kmInput()" (ngModelChange)="kmInput.set($event)"
-      placeholder="km"
-      (click)="$event.stopPropagation()"
-    />
-    <button
-      class="px-3 py-1 bg-primary hover:bg-primary/90 text-white rounded transition-colors"
-      (click)="submitKm(); $event.stopPropagation()"
-    >
-      Actualizar KM
-    </button>
+  <div class="flex items-start justify-between mb-2">
+    <h3 class="text-sm font-semibold group-hover:text-primary transition-colors">
+      {{ motorbike.brand }} {{ motorbike.model }}
+    </h3>
+    @if (status === 'warning') {
+      <span class="flex-shrink-0 text-yellow-400 text-xs" title="Requiere atención">⚠️</span>
+    } @else if (status === 'critical') {
+      <span class="flex-shrink-0 text-red-400 text-xs" title="Componente vencido">🔴</span>
+    }
   </div>
+
+  <div class="space-y-1 mb-3">
+    <p class="text-xs text-mec-muted">Año: {{ motorbike.year }}</p>
+    <p class="text-xs text-mec-muted">Km: {{ motorbike.currentKm | number }}</p>
+  </div>
+
+  @if (alertCount > 0) {
+    <div class="mb-3">
+      <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+            [class]="status === 'critical'
+              ? 'bg-red-900/50 text-red-300 border border-red-700'
+              : 'bg-yellow-900/50 text-yellow-300 border border-yellow-700'">
+        {{ alertCount }} alerta{{ alertCount > 1 ? 's' : '' }}
+      </span>
+    </div>
+  }
 
   <div class="flex justify-end">
     <button
-      class="px-3 py-1 text-xs bg-red-600 hover:bg-red-500 text-white rounded transition-colors"
-      (click)="delete.emit(motorbike.id); $event.stopPropagation()"
-    >
+      class="px-2 py-1 text-xs bg-red-600 hover:bg-red-500 text-white rounded transition-colors opacity-0 group-hover:opacity-100"
+      (click)="delete.emit(motorbike.id); $event.stopPropagation()">
       Eliminar
     </button>
   </div>

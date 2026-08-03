@@ -1,0 +1,226 @@
+<div class="p-4 space-y-8">
+
+  <!-- Formulario de Crear / Editar Mantenimiento -->
+  <section class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow">
+    <h2 class="text-xl font-bold mb-4">
+      @if (isEditing()) { Editar Mantenimiento } @else { Registrar Mantenimiento }
+    </h2>
+    <form (ngSubmit)="submitForm()" class="grid gap-4">
+
+      <!-- Selector de Moto -->
+      <div>
+        <label class="block text-sm font-medium text-mec-muted">Moto</label>
+        <select class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                [(ngModel)]="selectedMotorbikeId" name="motorbikeSelect">
+          <option [ngValue]="null">Seleccione una moto...</option>
+          @for (bike of motorbikes(); track bike.id) {
+            <option [ngValue]="bike.id">{{ bike.brand }} {{ bike.model }} ({{ bike.year }})</option>
+          }
+        </select>
+      </div>
+
+      <!-- Selector Multiple de Componentes -->
+      <div class="relative">
+        <label class="block text-sm font-medium text-mec-muted mb-2">
+          Componentes del catalogo (seleccione al menos 1, maximo {{ MAX_COMPONENTS }})
+        </label>
+        @if (loadingCatalog()) {
+          <p class="text-mec-muted">Cargando catalogo...</p>
+        } @else {
+          <!-- Chips de componentes seleccionados -->
+          <div class="flex flex-wrap gap-1 mb-2">
+            @for (comp of selectedComponentNames(); track comp.id) {
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-primary/20 text-primary rounded-full border border-primary/30">
+                {{ comp.name }}
+                <button type="button" (click)="removeComponent(comp.id)"
+                        class="ml-0.5 text-primary hover:text-white transition-colors">&times;</button>
+              </span>
+            }
+            @if (selectedComponentIds().length === 0) {
+              <span class="text-xs text-mec-muted">Ninguno seleccionado</span>
+            }
+          </div>
+
+          <!-- Boton desplegable -->
+          <button type="button"
+                  (click)="toggleDropdown()"
+                  class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded text-left text-sm flex items-center justify-between hover:border-primary transition-colors">
+            <span>{{ componentDropdownOpen() ? 'Cerrar lista' : 'Seleccionar componentes...' }}</span>
+            <svg class="w-4 h-4 text-mec-muted transition-transform" [class.rotate-180]="componentDropdownOpen()"
+                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+
+          <!-- Panel desplegable con busqueda y checkboxes -->
+          @if (componentDropdownOpen()) {
+            <div class="absolute z-40 mt-1 w-full bg-gray-800 border border-gray-600 rounded-lg shadow-xl overflow-hidden">
+              <div class="p-2 border-b border-gray-700">
+                <input type="text"
+                       class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded text-sm"
+                       placeholder="Buscar componente..."
+                       [(ngModel)]="componentSearch"
+                       name="componentSearch">
+              </div>
+              <div class="max-h-48 overflow-y-auto p-1">
+                @if (filteredCatalog().length === 0) {
+                  <p class="text-mec-muted text-sm p-2">No se encontraron componentes.</p>
+                }
+                @for (comp of filteredCatalog(); track comp.id) {
+                  <label class="flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-gray-700 transition-colors"
+                         [class.bg-primary/10]="isComponentSelected(comp.id)">
+                    <input type="checkbox"
+                           class="accent-primary w-4 h-4"
+                           [checked]="isComponentSelected(comp.id)"
+                           [disabled]="!isComponentSelected(comp.id) && !canAddComponent()"
+                           (change)="toggleComponent(comp.id)">
+                    <span class="text-sm text-white flex-1">{{ comp.name }}</span>
+                    <span class="text-xs text-mec-muted">{{ comp.lifespanKm }} km</span>
+                  </label>
+                }
+              </div>
+              <div class="p-2 border-t border-gray-700 flex justify-between items-center">
+                <span class="text-xs text-mec-muted">{{ selectedComponentIds().length }}/{{ MAX_COMPONENTS }} seleccionados</span>
+                <button type="button" (click)="closeDropdown()"
+                        class="text-xs text-primary hover:text-primary/80 transition-colors">Listo</button>
+              </div>
+            </div>
+          }
+
+          @if (selectedComponentIds().length === 0) {
+            <p class="text-xs text-mec-red mt-1">Debe seleccionar al menos 1 componente.</p>
+          }
+        }
+      </div>
+
+      <!-- Kilometraje -->
+      <div>
+        <label class="block text-sm font-medium text-mec-muted">Kilometraje actual</label>
+        <input type="number" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+               [(ngModel)]="maintenanceKm" name="km"
+               [min]="selectedBikeCurrentKm()">
+        @if (maintenanceKm() < selectedBikeCurrentKm() && selectedBikeCurrentKm() > 0) {
+          <p class="text-xs text-mec-red mt-1">
+            El kilometraje no puede ser menor al actual de la moto ({{ selectedBikeCurrentKm() }} km).
+          </p>
+        }
+      </div>
+
+      <!-- Fecha -->
+      <div>
+        <label class="block text-sm font-medium text-mec-muted">Fecha de mantenimiento</label>
+        <input type="date" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+               [(ngModel)]="maintenanceDate" name="date">
+      </div>
+
+      <!-- Descripcion -->
+      <div>
+        <label class="block text-sm font-medium text-mec-muted">Descripcion</label>
+        <textarea class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                  [(ngModel)]="description" name="desc" rows="3"></textarea>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex gap-3">
+        <button type="submit"
+                class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded transition-colors"
+                [disabled]="submitting() || selectedComponentIds().length === 0 || (maintenanceKm() < selectedBikeCurrentKm() && selectedBikeCurrentKm() > 0)">
+          @if (submitting()) {
+            @if (isEditing()) { Guardando... } @else { Registrando... }
+          } @else {
+            @if (isEditing()) { Guardar cambios } @else { Registrar mantenimiento }
+          }
+        </button>
+        @if (isEditing()) {
+          <button type="button"
+                  class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded transition-colors"
+                  (click)="cancelEdit()">
+            Cancelar
+          </button>
+        }
+      </div>
+    </form>
+  </section>
+
+  <!-- Historial Global de Mantenimientos -->
+  <section class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+      <h2 class="text-xl font-bold">Historial de Mantenimientos</h2>
+      <input type="text"
+             class="p-2 bg-gray-700 text-white border border-gray-600 rounded text-sm w-full sm:w-64"
+             placeholder="Buscar por moto..."
+             [(ngModel)]="searchMotorbike"
+             (ngModelChange)="applyFilter()">
+    </div>
+    @if (loadingHistory()) {
+      <p class="text-mec-muted">Cargando historial...</p>
+    } @else if (filteredHistory().length === 0) {
+      <p class="text-mec-muted">No hay mantenimientos registrados.</p>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-700 text-mec-muted">
+              @if (authService.isAdmin()) {
+                <th class="text-left py-2 px-3">Usuario</th>
+              }
+              <th class="text-left py-2 px-3">Moto</th>
+              <th class="text-left py-2 px-3">Fecha</th>
+              <th class="text-left py-2 px-3">Km</th>
+              <th class="text-left py-2 px-3">Componentes</th>
+              <th class="text-left py-2 px-3">Descripcion</th>
+              <th class="text-right py-2 px-3">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of filteredHistory(); track item.id) {
+              <tr class="border-b border-gray-700/50 hover:bg-gray-700/30">
+                @if (authService.isAdmin()) {
+                  <td class="py-2 px-3 text-mec-muted text-xs">{{ item.userEmail }}</td>
+                }
+                <td class="py-2 px-3 text-white font-medium">{{ item.motorbikeInfo }}</td>
+                <td class="py-2 px-3 text-white">{{ item.maintenanceDate }}</td>
+                <td class="py-2 px-3 text-white">{{ item.currentKm | number }} km</td>
+                <td class="py-2 px-3">
+                  <div class="flex flex-wrap gap-1">
+                    @for (name of item.componentNames; track name) {
+                      <span class="inline-block px-2 py-0.5 text-xs bg-primary/20 text-primary rounded-full border border-primary/30">
+                        {{ name }}
+                      </span>
+                    }
+                  </div>
+                </td>
+                <td class="py-2 px-3 text-mec-muted max-w-xs truncate">{{ item.description }}</td>
+                <td class="py-2 px-3 text-right whitespace-nowrap">
+                  @if (authService.isAdmin()) {
+                    <button (click)="startEdit(item)"
+                            class="text-primary hover:text-primary/80 mr-3 transition-colors">Editar</button>
+                    <button (click)="openDeleteConfirm(item.id)"
+                            class="text-mec-red hover:text-mec-red/80 transition-colors">Eliminar</button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+</div>
+
+<!-- Modal de confirmacion de eliminacion -->
+@if (showDeleteConfirm()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-xl max-w-sm w-full">
+      <h3 class="text-lg font-bold text-white mb-2">Confirmar eliminacion</h3>
+      <p class="text-mec-muted mb-4">¿Estas seguro de que deseas eliminar este registro de mantenimiento?</p>
+      <div class="flex justify-end gap-3">
+        <button (click)="closeDeleteConfirm()"
+                class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded transition-colors">Cancelar</button>
+        <button (click)="confirmDelete()"
+                class="px-4 py-2 bg-mec-red hover:bg-mec-red/80 text-white rounded transition-colors">Eliminar</button>
+      </div>
+    </div>
+  </div>
+}

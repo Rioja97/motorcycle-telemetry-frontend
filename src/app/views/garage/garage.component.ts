@@ -1,24 +1,26 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { MotorbikeService } from '../../service/motorbike-service';
 import { AuthService } from '../../service/auth.service';
+import { AlertService } from '../../service/alertService';
+import { MaintenanceService } from '../../service/maintenance.service';
 import { Router } from '@angular/router';
-import { signal } from '@angular/core';
+import { MotorbikeDTO } from '../../models/motorbike.model';
 import { GarageCardComponent } from './garage-card.component';
 
 @Component({
   selector: 'app-garage',
   standalone: true,
-  imports: [CommonModule, FormsModule, GarageCardComponent],
+  imports: [CommonModule, GarageCardComponent],
   templateUrl: './garage.component.html',
 })
 export class GarageComponent {
   private motorbikeService = inject(MotorbikeService);
   private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private maintenanceService = inject(MaintenanceService);
   private router = inject(Router);
 
-  // Pull signals from service
   private motorbikesRaw = this.motorbikeService.motorbikes;
   private allMotorbikesRaw = this.motorbikeService.allMotorbikes;
   loading = this.motorbikeService.loading;
@@ -31,19 +33,17 @@ export class GarageComponent {
     return this.motorbikesRaw();
   });
 
-  // Signal to control form visibility
-  showForm = signal<boolean>(false);
+  // KPIs
+  totalMotos = computed(() => this.motorbikes().length);
+  alertasActivas = computed(() => this.alertService.allAlerts().length);
+  mantenimientosMes = signal<number>(0);
+
+  // Alertas
+  alertas = this.alertService.allAlerts;
+  loadingAlertas = this.alertService.loadingAll;
+
   showDeleteConfirm = signal<boolean>(false);
   deleteConfirmId = signal<number | null>(null);
-
-  // Form fields
-  newBike = {
-    brand: '',
-    model: '',
-    year: new Date().getFullYear(),
-    currentKm: 0,
-  };
-  isCreating = signal<boolean>(false);
 
   constructor() {
     effect(() => {
@@ -53,49 +53,48 @@ export class GarageComponent {
         this.motorbikeService.loadMyMotorbikes();
       }
     });
+
+    this.alertService.loadPendingAlerts();
+    this.loadMantenimientosMes();
   }
 
-  /** Navigation to bike dashboard */
+  private loadMantenimientosMes() {
+    this.maintenanceService.getMaintenances().subscribe({
+      next: (data) => {
+        const now = new Date();
+        const mesActual = now.getMonth();
+        const anioActual = now.getFullYear();
+        const count = data.filter(m => {
+          const fecha = new Date(m.maintenanceDate);
+          return fecha.getMonth() === mesActual && fecha.getFullYear() === anioActual;
+        }).length;
+        this.mantenimientosMes.set(count);
+      }
+    });
+  }
+
   goToDashboard(id: number) {
     this.router.navigate(['/motorbike', id]);
   }
 
-  private reloadMotorbikes() {
-    if (this.authService.isAdmin()) {
-      this.motorbikeService.loadAllMotorbikes();
-    } else {
-      this.motorbikeService.loadMyMotorbikes();
-    }
+  getBikeStatus(bike: MotorbikeDTO): 'ok' | 'warning' | 'critical' {
+    const alerts = this.alertService.allAlerts();
+    const bikeAlerts = alerts.filter(a => a.motorbikeId === bike.id);
+    if (bikeAlerts.some(a => a.status === 'REPLACE')) return 'critical';
+    if (bikeAlerts.some(a => a.status === 'WARNING')) return 'warning';
+    return 'ok';
   }
 
-  /** Create a new motorbike */
-  createMotorbike() {
-    this.isCreating.set(true);
-    this.motorbikeService
-      .createMotorbike({
-        ...this.newBike,
-        initialMileage: this.newBike.currentKm,
-      })
-      .subscribe({
-        next: () => {
-          this.reloadMotorbikes();
-          this.showForm.set(false);
-          this.newBike = { brand: '', model: '', year: new Date().getFullYear(), currentKm: 0 };
-          this.isCreating.set(false);
-        },
-        error: (err) => {
-          console.error('Error creating motorbike', err);
-          this.isCreating.set(false);
-        },
-      });
+  getBikeAlertCount(bike: MotorbikeDTO): number {
+    return this.alertService.allAlerts().filter(a => a.motorbikeId === bike.id).length;
   }
 
-  /** Update kilometraje from card */
-  updateKm(id: number, km: number) {
-    this.motorbikeService.updateMileage(id, { currentKm: km }).subscribe({
-      next: () => this.reloadMotorbikes(),
-      error: (err) => console.error('Error updating km', err),
-    });
+  getAlertBorderColor(status: string): string {
+    return status === 'REPLACE' ? 'border-red-500' : 'border-yellow-500';
+  }
+
+  getAlertStatusColor(status: string): string {
+    return status === 'REPLACE' ? 'text-red-400' : 'text-yellow-400';
   }
 
   openDeleteConfirm(id: number) {
@@ -111,16 +110,24 @@ export class GarageComponent {
   confirmDelete() {
     const id = this.deleteConfirmId();
     if (!id) return;
-
     this.motorbikeService.deleteMotorbike(id).subscribe({
       next: () => {
         this.reloadMotorbikes();
         this.closeDeleteConfirm();
+        this.alertService.loadPendingAlerts();
       },
       error: (err) => {
         console.error('Error deleting motorbike', err);
         this.closeDeleteConfirm();
       },
     });
+  }
+
+  private reloadMotorbikes() {
+    if (this.authService.isAdmin()) {
+      this.motorbikeService.loadAllMotorbikes();
+    } else {
+      this.motorbikeService.loadMyMotorbikes();
+    }
   }
 }

@@ -18,10 +18,19 @@ export const routes: Routes = [
         loadComponent: () => import('./views/fleet/fleet.component').then(m => m.FleetComponent),
         canActivate: [adminGuard]
       },
+      {
+        path: 'admins',
+        loadComponent: () => import('./views/admins/admin-view.component').then(m => m.AdminViewComponent),
+        canActivate: [adminGuard]
+      },
       { path: 'perfil', loadComponent: () => import('./views/profile/profile.component').then(m => m.ProfileComponent) },
       {
         path: 'componentes',
         loadComponent: () => import('./views/catalog/catalog-view.component').then(m => m.CatalogViewComponent),
+      },
+      {
+        path: 'mantenimiento',
+        loadComponent: () => import('./views/maintenance/maintenance-view.component').then(m => m.MaintenanceViewComponent),
       },
         {
           path: 'motorbike/:id',
@@ -29,7 +38,7 @@ export const routes: Routes = [
           children: [
             { path: '', loadComponent: () => import('./views/dashboard/dashboard-view/dashboard-view.component').then(m => m.DashboardViewComponent) },
             { path: 'alertas', loadComponent: () => import('./views/dashboard/dashboard-alerts/alerts-view.component').then(m => m.AlertsViewComponent) },
-            { path: 'mantenimiento', loadComponent: () => import('./views/dashboard/dashboard-maintenance/maintenance-view.component').then(m => m.MaintenanceViewComponent) }
+            { path: 'mantenimiento', loadComponent: () => import('./views/dashboard/dashboard-maintenance/maintenance-history.component').then(m => m.MaintenanceHistoryComponent) }
           ]
         }
     ]

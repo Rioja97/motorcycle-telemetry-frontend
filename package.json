@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:with-telemetry": "concurrently \"ng serve\" \"node ../simulatorKM/simulador.js\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -34,6 +35,7 @@
     "@types/express": "^5.0.1",
     "@types/node": "^20.17.19",
     "autoprefixer": "^10.5.4",
+    "concurrently": "^10.0.4",
     "jsdom": "^28.0.0",
     "postcss": "^8.5.23",
     "prettier": "^3.8.1",

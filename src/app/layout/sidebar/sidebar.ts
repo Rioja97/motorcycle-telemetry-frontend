@@ -23,6 +23,7 @@ export class SidebarComponent {
   // Navigation items
   navItems = signal([
     { label: 'Garaje', path: '/', icon: '🏍️' },
+    { label: 'Mantenimiento', path: '/mantenimiento', icon: '🛠️' },
     { label: 'Perfil', path: '/perfil', icon: '👤' },
     { label: 'Componentes', path: '/componentes', icon: '🔧' },
     { label: 'Configuración', path: '/settings', icon: '⚙️' },

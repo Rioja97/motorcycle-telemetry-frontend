@@ -52,16 +52,18 @@ export interface InstalledComponentResponseDTO {
 }
 
 export interface MaintenanceRequestDTO {
-  installedComponentId: number;
-  currentKm: number;
+  motorbikeId: number;
+  catalogComponentIds: number[];
   maintenanceDate: string;
+  currentKm: number;
   description: string;
 }
 
 export interface MaintenanceResponseDTO {
   id: number;
   motorbikeInfo: string;
-  componentName: string;
+  userEmail: string;
+  componentNames: string[];
   maintenanceDate: string;
   currentKm: number;
   description: string;
@@ -74,4 +76,17 @@ export interface AlertResponseDTO {
   status: string;
   message: string;
   catalogComponentId: number;
+}
+
+export interface AdminResponseDTO {
+  id: number;
+  name: string;
+  email: string;
+  roles: string[];
+}
+
+export interface AdminRequestDTO {
+  name: string;
+  email: string;
+  password?: string;
 }

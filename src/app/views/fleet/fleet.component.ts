@@ -31,7 +31,7 @@ export class FleetComponent {
 
   filteredMotorbikes = computed(() => {
     const term = this.searchTerm().toLowerCase().trim();
-    const userMotorbikes = this.motorbikes().filter(bike => bike.userRole !== 'ADMIN');
+    const userMotorbikes = this.motorbikes();
     if (!term) return userMotorbikes;
     return userMotorbikes.filter(
       (bike) =>

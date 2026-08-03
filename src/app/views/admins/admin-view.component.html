@@ -1,0 +1,202 @@
+<div class="p-4 bg-mec-bg min-h-screen text-white">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+    <h1 class="text-2xl font-bold">Administradores</h1>
+    <div class="flex items-center gap-3">
+      <input
+        type="text"
+        placeholder="Buscar por nombre o email..."
+        class="w-64 p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+      />
+      <button
+        class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded transition-colors text-sm font-medium"
+        (click)="openCreateModal()"
+      >
+        + Crear Administrador
+      </button>
+    </div>
+  </div>
+
+  @if (successMessage()) {
+    <div class="mb-4 p-3 bg-green-800/50 border border-green-600 text-green-200 rounded text-sm">
+      {{ successMessage() }}
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="mb-4 p-3 bg-red-800/50 border border-red-600 text-red-200 rounded text-sm">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="flex items-center justify-center py-8">
+      <svg class="animate-spin h-6 w-6 text-primary mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+      </svg>
+      <span>Cargando administradores...</span>
+    </div>
+  } @else if (filteredAdmins().length === 0) {
+    <div class="text-center py-8">
+      <p class="text-mec-muted">No hay administradores registrados.</p>
+    </div>
+  } @else {
+    <div class="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-gray-700">
+            <th class="px-4 py-3 text-left text-sm font-semibold text-mec-muted">Nombre</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-mec-muted">Email</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-mec-muted">Roles</th>
+            <th class="px-4 py-3 text-right text-sm font-semibold text-mec-muted">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (admin of filteredAdmins(); track admin.id) {
+            <tr class="border-b border-gray-700 hover:bg-gray-700/50 transition-colors">
+              <td class="px-4 py-3 text-sm">{{ admin.name }}</td>
+              <td class="px-4 py-3 text-sm">{{ admin.email }}</td>
+              <td class="px-4 py-3 text-sm">
+                <div class="flex gap-1">
+                  @for (role of admin.roles; track role) {
+                    <span class="px-2 py-0.5 text-xs rounded"
+                          [class]="role === 'ROLE_ADMIN' ? 'bg-primary/20 text-primary' : 'bg-gray-600 text-gray-300'">
+                      {{ role }}
+                    </span>
+                  }
+                </div>
+              </td>
+              <td class="px-4 py-3 text-sm text-right">
+                @if (!isHardcoded(admin)) {
+                  <div class="flex items-center justify-end gap-2">
+                    <button
+                      class="px-3 py-1 text-xs bg-primary hover:bg-primary/90 text-white rounded transition-colors"
+                      (click)="openEditModal(admin)"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      class="px-3 py-1 text-xs bg-red-600 hover:bg-red-500 text-white rounded transition-colors"
+                      (click)="openDeleteConfirm(admin.id)"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                } @else {
+                  <span class="text-xs text-mec-muted italic">Protegido</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Create Modal -->
+  @if (showCreateModal()) {
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" (click)="closeCreateModal()">
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-md" (click)="$event.stopPropagation()">
+        <h2 class="text-xl font-bold mb-4">Crear Administrador</h2>
+        @if (errorMessage()) {
+          <div class="mb-4 p-3 bg-red-800/50 border border-red-600 text-red-200 rounded text-sm">
+            {{ errorMessage() }}
+          </div>
+        }
+        <form (ngSubmit)="submitCreate()" class="grid gap-4">
+          <div>
+            <label class="block text-sm font-medium text-mec-muted">Nombre</label>
+            <input type="text" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                   [(ngModel)]="createForm.name" name="name" required placeholder="Ej: Juan Pérez">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-mec-muted">Email</label>
+            <input type="email" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                   [(ngModel)]="createForm.email" name="email" required placeholder="Ej: admin@ejemplo.com">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-mec-muted">Contraseña</label>
+            <input type="password" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                   [(ngModel)]="createForm.password" name="password" required placeholder="Contraseña">
+          </div>
+          <div class="flex gap-2 justify-end">
+            <button type="button" class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded"
+                    (click)="closeCreateModal()">
+              Cancelar
+            </button>
+            <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded">
+              Crear
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Edit Modal -->
+  @if (showEditModal()) {
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" (click)="closeEditModal()">
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-md" (click)="$event.stopPropagation()">
+        <h2 class="text-xl font-bold mb-4">Editar Administrador</h2>
+        @if (errorMessage()) {
+          <div class="mb-4 p-3 bg-red-800/50 border border-red-600 text-red-200 rounded text-sm">
+            {{ errorMessage() }}
+          </div>
+        }
+        <form (ngSubmit)="submitEdit()" class="grid gap-4">
+          <div>
+            <label class="block text-sm font-medium text-mec-muted">Nombre</label>
+            <input type="text" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                   [(ngModel)]="editForm.name" name="name" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-mec-muted">Email</label>
+            <input type="email" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                   [(ngModel)]="editForm.email" name="email" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-mec-muted">Contraseña (dejar vacío para no cambiar)</label>
+            <input type="password" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                   [(ngModel)]="editForm.password" name="password" placeholder="Nueva contraseña (opcional)">
+          </div>
+          <div class="flex gap-2 justify-end">
+            <button type="button" class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded"
+                    (click)="closeEditModal()">
+              Cancelar
+            </button>
+            <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded">
+              Guardar cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Delete Confirmation Modal -->
+  @if (showDeleteConfirm()) {
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" (click)="closeDeleteConfirm()">
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-md" (click)="$event.stopPropagation()">
+        <h2 class="text-xl font-bold mb-4">Eliminar Administrador</h2>
+        @if (deleteError()) {
+          <div class="mb-4 p-3 bg-red-800/50 border border-red-600 text-red-200 rounded text-sm">
+            {{ deleteError() }}
+          </div>
+        }
+        <p class="text-mec-muted mb-6">¿Estás seguro de que quieres eliminar este administrador? Esta acción no se puede deshacer.</p>
+        <div class="flex gap-2 justify-end">
+          <button class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded"
+                  (click)="closeDeleteConfirm()">
+            Cancelar
+          </button>
+          <button class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded"
+                  (click)="confirmDelete()">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

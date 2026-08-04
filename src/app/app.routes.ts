@@ -4,9 +4,24 @@ import { MainLayoutComponent } from './layout/main-layout/main-layout';
 import { LoginComponent } from './views/auth/login.component';
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
+import { publicGuard } from './guards/public.guard';
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent, canActivate: [publicGuard] },
+  {
+    path: 'forgot-password',
+    loadComponent: () => import('./views/auth/forgot-password.component').then(m => m.ForgotPasswordComponent),
+    canActivate: [publicGuard]
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./views/auth/reset-password.component').then(m => m.ResetPasswordComponent),
+    canActivate: [publicGuard]
+  },
+  {
+    path: 'ayuda',
+    loadComponent: () => import('./views/help/help.component').then(m => m.HelpComponent),
+  },
   {
     path: '',
     component: MainLayoutComponent,

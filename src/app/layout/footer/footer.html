@@ -1,10 +1,9 @@
-<footer class="app-footer">
-  <div class="footer-content">
-    <span>&copy; {{ currentYear }} MotoTelemetry. Todos los derechos reservados.</span>
-    <div class="footer-links">
-      <a href="#">Privacidad</a>
-      <a href="#">Términos</a>
-      <a href="#">Contacto</a>
-    </div>
-  </div>
+<footer class="border-t border-gray-800 py-4 px-6 text-center text-sm text-gray-500">
+  &copy; {{ currentYear }} MotoTelemetry. Todos los derechos reservados.
+  <span class="mx-2">·</span>
+  <a href="#" class="hover:text-white transition-colors">Privacidad</a>
+  <span class="mx-2">·</span>
+  <a href="#" class="hover:text-white transition-colors">Terminos</a>
+  <span class="mx-2">·</span>
+  <a routerLink="/ayuda" class="hover:text-white transition-colors">Contacto</a>
 </footer>

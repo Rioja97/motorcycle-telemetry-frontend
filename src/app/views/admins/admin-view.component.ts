@@ -2,7 +2,7 @@ import { Component, signal, inject, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../service/admin.service';
-import { AdminResponseDTO } from '../../models/motorbike.model';
+import { AdminResponseDTO, AdminRequestDTO } from '../../models/motorbike.model';
 
 @Component({
   selector: 'app-admin-view',
@@ -26,8 +26,8 @@ export class AdminViewComponent implements OnInit {
   deleteConfirmId = signal<number | null>(null);
   deleteError = signal('');
 
-  createForm = { name: '', email: '', password: '' };
-  editForm = { name: '', email: '', password: '' };
+  createForm = { firstName: '', lastName: '', email: '', password: '' };
+  editForm = { firstName: '', lastName: '', email: '', password: '' };
 
   protected readonly HARDCODED_EMAIL = 'admin@test.com';
 
@@ -36,7 +36,8 @@ export class AdminViewComponent implements OnInit {
     const items = this.admins();
     if (!term) return items;
     return items.filter(a =>
-      a.name.toLowerCase().includes(term) ||
+      a.firstName.toLowerCase().includes(term) ||
+      a.lastName.toLowerCase().includes(term) ||
       a.email.toLowerCase().includes(term)
     );
   });
@@ -65,7 +66,7 @@ export class AdminViewComponent implements OnInit {
   }
 
   openCreateModal() {
-    this.createForm = { name: '', email: '', password: '' };
+    this.createForm = { firstName: '', lastName: '', email: '', password: '' };
     this.errorMessage.set('');
     this.showCreateModal.set(true);
   }
@@ -75,12 +76,13 @@ export class AdminViewComponent implements OnInit {
   }
 
   submitCreate() {
-    if (!this.createForm.name.trim() || !this.createForm.email.trim() || !this.createForm.password.trim()) {
+    if (!this.createForm.firstName.trim() || !this.createForm.lastName.trim() || !this.createForm.email.trim() || !this.createForm.password.trim()) {
       this.errorMessage.set('Todos los campos son requeridos');
       return;
     }
     this.adminService.create({
-      name: this.createForm.name.trim(),
+      firstName: this.createForm.firstName.trim(),
+      lastName: this.createForm.lastName.trim(),
       email: this.createForm.email.trim(),
       password: this.createForm.password
     }).subscribe({
@@ -98,7 +100,7 @@ export class AdminViewComponent implements OnInit {
 
   openEditModal(admin: AdminResponseDTO) {
     this.editingAdmin.set(admin);
-    this.editForm = { name: admin.name, email: admin.email, password: '' };
+    this.editForm = { firstName: admin.firstName, lastName: admin.lastName, email: admin.email, password: '' };
     this.errorMessage.set('');
     this.showEditModal.set(true);
   }
@@ -111,12 +113,13 @@ export class AdminViewComponent implements OnInit {
   submitEdit() {
     const admin = this.editingAdmin();
     if (!admin) return;
-    if (!this.editForm.name.trim() || !this.editForm.email.trim()) {
-      this.errorMessage.set('Nombre y email son requeridos');
+    if (!this.editForm.firstName.trim() || !this.editForm.lastName.trim() || !this.editForm.email.trim()) {
+      this.errorMessage.set('Nombre, apellido y email son requeridos');
       return;
     }
-    const payload: { name: string; email: string; password?: string } = {
-      name: this.editForm.name.trim(),
+    const payload: AdminRequestDTO = {
+      firstName: this.editForm.firstName.trim(),
+      lastName: this.editForm.lastName.trim(),
       email: this.editForm.email.trim()
     };
     if (this.editForm.password.trim()) {

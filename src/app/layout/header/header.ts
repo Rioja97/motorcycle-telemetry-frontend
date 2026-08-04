@@ -25,8 +25,6 @@ export class HeaderComponent {
 
   logout() {
     this.auth.logout();
-    // Optionally navigate to home after logout
-    this.router.navigate(['/']);
   }
 
   goToProfile() {

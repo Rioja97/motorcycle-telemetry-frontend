@@ -80,13 +80,15 @@ export interface AlertResponseDTO {
 
 export interface AdminResponseDTO {
   id: number;
-  name: string;
   email: string;
-  roles: string[];
+  firstName: string;
+  lastName: string;
+  role: string;
 }
 
 export interface AdminRequestDTO {
-  name: string;
   email: string;
   password?: string;
+  firstName: string;
+  lastName: string;
 }

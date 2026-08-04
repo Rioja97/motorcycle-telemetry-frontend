@@ -21,7 +21,7 @@
   </div>
 
   @if (alertCount > 0) {
-    <div class="mb-3">
+    <div>
       <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
             [class]="status === 'critical'
               ? 'bg-red-900/50 text-red-300 border border-red-700'
@@ -30,12 +30,4 @@
       </span>
     </div>
   }
-
-  <div class="flex justify-end">
-    <button
-      class="px-2 py-1 text-xs bg-red-600 hover:bg-red-500 text-white rounded transition-colors opacity-0 group-hover:opacity-100"
-      (click)="delete.emit(motorbike.id); $event.stopPropagation()">
-      Eliminar
-    </button>
-  </div>
 </div>

@@ -1,65 +1,118 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   template: `
-    <div class="min-h-screen flex items-center justify-center" style="background-color: var(--color-surface);">
-      <div class="w-full max-w-md p-8 rounded-xl" style="background-color: var(--color-surface-variant); border: 1px solid var(--color-border);">
+    <div class="min-h-screen flex items-center justify-center bg-slate-900">
+      <div class="w-full max-w-md bg-slate-800 rounded-xl shadow-lg p-8">
 
         <div class="text-center mb-8">
-          <h1 class="text-2xl font-bold" style="color: var(--color-primary); font-family: var(--font-family-display);">
-            Moto Telemetry
-          </h1>
-          <p class="mt-2 text-sm" style="color: var(--color-text-muted);">
-            {{ isRegister() ? 'Crear una cuenta' : 'Iniciar sesion' }}
+          <img src="assets/logo.png" alt="MotoTelemetry" class="mx-auto h-28 mb-6 object-contain">
+          <p class="mt-2 text-sm text-slate-400">
+            {{ isRegister() ? 'Crear una cuenta' : 'Iniciar sesión' }}
           </p>
         </div>
 
         @if (error()) {
-          <div class="mb-4 p-3 rounded-lg text-sm" style="background-color: rgba(255,107,107,0.1); color: var(--color-error); border: 1px solid rgba(255,107,107,0.3);">
+          <div class="mb-4 p-3 rounded-lg text-sm bg-red-500/10 text-red-400 border border-red-500/30">
             {{ error() }}
           </div>
         }
 
-        <form (ngSubmit)="onSubmit()" class="space-y-4">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+          @if (isRegister()) {
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium mb-1 text-slate-300">Nombre</label>
+                <input
+                  type="text"
+                  formControlName="firstName"
+                  class="w-full px-4 py-3 rounded-lg text-sm bg-slate-700 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all"
+                  placeholder="Juan"
+                />
+                @if (loginForm.get('firstName')?.touched && loginForm.get('firstName')?.invalid) {
+                  <p class="mt-1 text-xs text-red-400">Nombre requerido</p>
+                }
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1 text-slate-300">Apellido</label>
+                <input
+                  type="text"
+                  formControlName="lastName"
+                  class="w-full px-4 py-3 rounded-lg text-sm bg-slate-700 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all"
+                  placeholder="Perez"
+                />
+                @if (loginForm.get('lastName')?.touched && loginForm.get('lastName')?.invalid) {
+                  <p class="mt-1 text-xs text-red-400">Apellido requerido</p>
+                }
+              </div>
+            </div>
+          }
+
           <div>
-            <label class="block text-sm font-medium mb-1" style="color: var(--color-text-secondary);">Email</label>
+            <label class="block text-sm font-medium mb-1 text-slate-300">Email</label>
             <input
               type="email"
-              [(ngModel)]="email"
-              name="email"
-              required
-              class="w-full px-4 py-3 rounded-lg text-sm focus:outline-none focus:ring-2 transition-all"
-              style="background-color: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text-primary);"
-              placeholder="tu&#64;email.com"
+              formControlName="email"
+              class="w-full px-4 py-3 rounded-lg text-sm bg-slate-700 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all"
+              placeholder="tu@email.com"
             />
+            @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
+              <p class="mt-1 text-xs text-red-400">
+                @if (loginForm.get('email')?.errors?.['required']) {
+                  El email es requerido
+                } @else if (loginForm.get('email')?.errors?.['email']) {
+                  Ingrese un email válido
+                }
+              </p>
+            }
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1" style="color: var(--color-text-secondary);">Contrasena</label>
+            <label class="block text-sm font-medium mb-1 text-slate-300">Contraseña</label>
             <input
               type="password"
-              [(ngModel)]="password"
-              name="password"
-              required
-              minlength="6"
-              class="w-full px-4 py-3 rounded-lg text-sm focus:outline-none focus:ring-2 transition-all"
-              style="background-color: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text-primary);"
-              placeholder="Minimo 6 caracteres"
+              formControlName="password"
+              class="w-full px-4 py-3 rounded-lg text-sm bg-slate-700 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all"
+              placeholder="Mínimo 6 caracteres"
             />
+            @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
+              <p class="mt-1 text-xs text-red-400">
+                @if (loginForm.get('password')?.errors?.['required']) {
+                  La contraseña es requerida
+                } @else if (loginForm.get('password')?.errors?.['minlength']) {
+                  Mínimo 6 caracteres
+                }
+              </p>
+            }
           </div>
+
+          @if (!isRegister()) {
+            <div class="flex items-center justify-between">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  formControlName="rememberMe"
+                  class="w-4 h-4 rounded border-slate-600 bg-slate-700 text-cyan-400 focus:ring-cyan-400 focus:ring-offset-0 cursor-pointer"
+                />
+                <span class="text-sm text-slate-400">Recordar sesión</span>
+              </label>
+              <a routerLink="/forgot-password" class="text-sm text-cyan-400 hover:text-cyan-300 hover:underline transition-colors">
+                ¿Olvidaste tu contraseña?
+              </a>
+            </div>
+          }
 
           <button
             type="submit"
             [disabled]="loading()"
-            class="w-full py-3 rounded-lg font-semibold text-sm transition-all disabled:opacity-50"
-            style="background-color: var(--color-primary); color: var(--color-surface);"
+            class="w-full py-3 rounded-lg font-semibold text-sm bg-cyan-500 hover:bg-cyan-400 text-slate-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             @if (loading()) {
               <span class="flex items-center justify-center gap-2">
@@ -70,45 +123,49 @@ import { AuthService } from '../../service/auth.service';
                 {{ isRegister() ? 'Creando cuenta...' : 'Ingresando...' }}
               </span>
             } @else {
-              {{ isRegister() ? 'Crear cuenta' : 'Iniciar sesion' }}
+              {{ isRegister() ? 'Crear cuenta' : 'Iniciar sesión' }}
             }
           </button>
         </form>
 
-        <div class="mt-6 text-center">
+        <div class="mt-6 text-center space-y-2">
           <button
             (click)="toggleMode()"
-            class="text-sm hover:underline transition-colors"
-            style="color: var(--color-primary);"
+            class="text-sm text-cyan-400 hover:text-cyan-300 hover:underline transition-colors"
           >
-            {{ isRegister() ? 'Ya tengo una cuenta, iniciar sesion' : 'No tengo cuenta, registrarme' }}
+            {{ isRegister() ? 'Ya tengo una cuenta, iniciar sesión' : 'No tengo cuenta, registrarme' }}
           </button>
+          <div>
+            <a routerLink="/ayuda" class="text-sm text-slate-400 hover:text-slate-300 hover:underline transition-colors">
+              ¿Qué es MotoTelemetry?
+            </a>
+          </div>
         </div>
 
       </div>
     </div>
   `,
-  styles: [`
-    input:focus {
-      border-color: var(--color-primary) !important;
-      box-shadow: 0 0 0 2px rgba(0, 243, 255, 0.15);
-    }
-    button:hover:not(:disabled) {
-      filter: brightness(1.1);
-    }
-  `]
+  styles: []
 })
 export class LoginComponent {
-  email = '';
-  password = '';
+  loginForm: FormGroup;
   isRegister = signal(false);
   loading = signal(false);
   error = signal('');
 
   constructor(
+    private fb: FormBuilder,
     private authService: AuthService,
     private router: Router
   ) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      rememberMe: [false],
+      firstName: [''],
+      lastName: ['']
+    });
+
     if (this.authService.getToken()) {
       this.router.navigate(['/']);
     }
@@ -117,20 +174,41 @@ export class LoginComponent {
   toggleMode() {
     this.isRegister.update(v => !v);
     this.error.set('');
+
+    const firstName = this.loginForm.get('firstName');
+    const lastName = this.loginForm.get('lastName');
+
+    if (this.isRegister()) {
+      firstName?.setValidators([Validators.required]);
+      lastName?.setValidators([Validators.required]);
+    } else {
+      firstName?.clearValidators();
+      lastName?.clearValidators();
+    }
+
+    firstName?.updateValueAndValidity();
+    lastName?.updateValueAndValidity();
   }
 
   onSubmit() {
-    if (!this.email || !this.password || this.password.length < 6) {
-      this.error.set('Completa todos los campos (minimo 6 caracteres en contrasena)');
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
       return;
     }
 
     this.loading.set(true);
     this.error.set('');
 
+    const { email, password, rememberMe, firstName, lastName } = this.loginForm.value;
+
+    /*
+     * Lógica de rememberMe en AuthService:
+     * - Si rememberMe es true → guardar el JWT en localStorage (persiste al cerrar navegador).
+     * - Si rememberMe es false → guardar el JWT en sessionStorage (se elimina al cerrar la pestaña).
+     */
     const action = this.isRegister()
-      ? this.authService.register(this.email, this.password)
-      : this.authService.login(this.email, this.password);
+      ? this.authService.register(email, password, firstName.trim(), lastName.trim(), rememberMe)
+      : this.authService.login(email, password, rememberMe);
 
     action.subscribe({
       next: () => {

@@ -56,17 +56,13 @@
         <tbody>
           @for (admin of filteredAdmins(); track admin.id) {
             <tr class="border-b border-gray-700 hover:bg-gray-700/50 transition-colors">
-              <td class="px-4 py-3 text-sm">{{ admin.name }}</td>
+              <td class="px-4 py-3 text-sm">{{ admin.firstName }} {{ admin.lastName }}</td>
               <td class="px-4 py-3 text-sm">{{ admin.email }}</td>
               <td class="px-4 py-3 text-sm">
-                <div class="flex gap-1">
-                  @for (role of admin.roles; track role) {
-                    <span class="px-2 py-0.5 text-xs rounded"
-                          [class]="role === 'ROLE_ADMIN' ? 'bg-primary/20 text-primary' : 'bg-gray-600 text-gray-300'">
-                      {{ role }}
-                    </span>
-                  }
-                </div>
+                <span class="px-2 py-0.5 text-xs rounded"
+                      [class]="admin.role === 'ADMIN' ? 'bg-primary/20 text-primary' : 'bg-gray-600 text-gray-300'">
+                  {{ admin.role }}
+                </span>
               </td>
               <td class="px-4 py-3 text-sm text-right">
                 @if (!isHardcoded(admin)) {
@@ -106,10 +102,17 @@
           </div>
         }
         <form (ngSubmit)="submitCreate()" class="grid gap-4">
-          <div>
-            <label class="block text-sm font-medium text-mec-muted">Nombre</label>
-            <input type="text" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
-                   [(ngModel)]="createForm.name" name="name" required placeholder="Ej: Juan Pérez">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-mec-muted">Nombre</label>
+              <input type="text" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                     [(ngModel)]="createForm.firstName" name="firstName" required placeholder="Juan">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-mec-muted">Apellido</label>
+              <input type="text" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                     [(ngModel)]="createForm.lastName" name="lastName" required placeholder="Perez">
+            </div>
           </div>
           <div>
             <label class="block text-sm font-medium text-mec-muted">Email</label>
@@ -146,10 +149,17 @@
           </div>
         }
         <form (ngSubmit)="submitEdit()" class="grid gap-4">
-          <div>
-            <label class="block text-sm font-medium text-mec-muted">Nombre</label>
-            <input type="text" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
-                   [(ngModel)]="editForm.name" name="name" required>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-mec-muted">Nombre</label>
+              <input type="text" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                     [(ngModel)]="editForm.firstName" name="firstName" required>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-mec-muted">Apellido</label>
+              <input type="text" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
+                     [(ngModel)]="editForm.lastName" name="lastName" required>
+            </div>
           </div>
           <div>
             <label class="block text-sm font-medium text-mec-muted">Email</label>

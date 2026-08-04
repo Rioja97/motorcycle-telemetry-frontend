@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MotorbikeService } from '../../service/motorbike-service';
 import { AuthService } from '../../service/auth.service';
 import { AlertService } from '../../service/alertService';
@@ -11,7 +12,7 @@ import { GarageCardComponent } from './garage-card.component';
 @Component({
   selector: 'app-garage',
   standalone: true,
-  imports: [CommonModule, GarageCardComponent],
+  imports: [CommonModule, FormsModule, GarageCardComponent],
   templateUrl: './garage.component.html',
 })
 export class GarageComponent {
@@ -41,6 +42,10 @@ export class GarageComponent {
   // Alertas
   alertas = this.alertService.allAlerts;
   loadingAlertas = this.alertService.loadingAll;
+
+  showForm = signal<boolean>(false);
+  isCreating = signal<boolean>(false);
+  newBike = { brand: '', model: '', year: new Date().getFullYear(), currentKm: 0 };
 
   showDeleteConfirm = signal<boolean>(false);
   deleteConfirmId = signal<number | null>(null);
@@ -75,6 +80,26 @@ export class GarageComponent {
 
   goToDashboard(id: number) {
     this.router.navigate(['/motorbike', id]);
+  }
+
+  createMotorbike() {
+    this.isCreating.set(true);
+    this.motorbikeService.createMotorbike({
+      ...this.newBike,
+      initialMileage: this.newBike.currentKm,
+    }).subscribe({
+      next: () => {
+        this.reloadMotorbikes();
+        this.showForm.set(false);
+        this.newBike = { brand: '', model: '', year: new Date().getFullYear(), currentKm: 0 };
+        this.isCreating.set(false);
+        this.alertService.loadPendingAlerts();
+      },
+      error: (err) => {
+        console.error('Error creating motorbike', err);
+        this.isCreating.set(false);
+      },
+    });
   }
 
   getBikeStatus(bike: MotorbikeDTO): 'ok' | 'warning' | 'critical' {

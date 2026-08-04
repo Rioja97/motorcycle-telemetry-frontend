@@ -20,13 +20,17 @@ export class SidebarComponent {
   collapsed = signal(false);
   isAdmin = computed(() => this.auth.isAdmin());
 
-  // Navigation items
-  navItems = signal([
+  // Main navigation items
+  mainNavItems = signal([
     { label: 'Garaje', path: '/', icon: '🏍️' },
     { label: 'Mantenimiento', path: '/mantenimiento', icon: '🛠️' },
-    { label: 'Perfil', path: '/perfil', icon: '👤' },
     { label: 'Componentes', path: '/componentes', icon: '🔧' },
-    { label: 'Configuración', path: '/settings', icon: '⚙️' },
+  ]);
+
+  // Bottom navigation items (always at the bottom)
+  bottomNavItems = signal([
+    { label: 'Perfil', path: '/perfil', icon: '👤' },
+    { label: 'Ayuda', path: '/ayuda', icon: '📖' },
   ]);
 
   logout() {

@@ -48,7 +48,7 @@
       } @else if (motorbikes().length === 0) {
         <div class="text-center py-12 bg-gray-800 border border-gray-700 rounded-lg">
           <p class="text-mec-muted mb-2">No hay motocicletas registradas.</p>
-          <p class="text-sm text-mec-muted">Registra tu primera moto desde el menú de flota.</p>
+          <p class="text-sm text-mec-muted">Haz clic en el botón <span class="text-primary font-bold">+</span> para registrar tu primera moto.</p>
         </div>
       } @else {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -58,7 +58,6 @@
               [status]="getBikeStatus(bike)"
               [alertCount]="getBikeAlertCount(bike)"
               (navigate)="goToDashboard($event)"
-              (delete)="openDeleteConfirm($event)"
             />
           }
         </div>
@@ -133,5 +132,56 @@
         </div>
       </div>
     </div>
+  }
+
+  <!-- Create Motorbike Modal -->
+  @if (showForm()) {
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" (click)="showForm.set(false)">
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-md" (click)="$event.stopPropagation()">
+        <h2 class="text-xl font-bold mb-4">Registrar Motocicleta</h2>
+        <form (ngSubmit)="createMotorbike()" class="grid gap-4">
+          <div>
+            <label class="block text-sm font-medium text-mec-muted">Marca</label>
+            <input type="text" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                   [(ngModel)]="newBike.brand" name="brand" required placeholder="Ej: Honda">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-mec-muted">Modelo</label>
+            <input type="text" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                   [(ngModel)]="newBike.model" name="model" required placeholder="Ej: CB500F">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-mec-muted">Año</label>
+            <input type="number" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                   [(ngModel)]="newBike.year" name="year" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-mec-muted">Kilometraje inicial</label>
+            <input type="number" class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                   [(ngModel)]="newBike.currentKm" name="km" required min="0">
+          </div>
+          <div class="flex gap-2 justify-end mt-2">
+            <button type="button" class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded transition-colors"
+                    (click)="showForm.set(false)">
+              Cancelar
+            </button>
+            <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded transition-colors"
+                    [disabled]="isCreating()">
+              @if (isCreating()) { Registrando... } @else { Registrar }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- FAB Button -->
+  @if (!showForm()) {
+    <button class="fixed bottom-6 right-6 w-12 h-12 bg-primary hover:bg-primary/90 text-white
+                   rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center
+                   text-xl z-40"
+            (click)="showForm.set(true)" aria-label="Nueva Moto">
+      +
+    </button>
   }
 </div>

@@ -3,16 +3,11 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
-import { tap } from 'rxjs';
+import { tap, catchError, of } from 'rxjs';
+import { User, UpdateProfileRequest, ChangePasswordRequest, ResetPasswordRequest } from '../models/user.model';
 
 interface AuthResponse {
   token: string;
-}
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -22,44 +17,45 @@ export class AuthService {
   private platformId = inject(PLATFORM_ID);
   private readonly tokenKey = 'auth_token';
   private apiUrl = `${environment.apiUrl}/auth`;
+  private usersUrl = `${environment.apiUrl}/users`;
 
   user = signal<User | null>(null);
   private _token = signal<string | null>(null);
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem(this.tokenKey);
+      let token = localStorage.getItem(this.tokenKey);
+      if (!token) {
+        token = sessionStorage.getItem(this.tokenKey);
+      }
       this._token.set(token);
       if (token) {
-        const payload = this.decodeToken(token);
-        if (payload) {
-          this.user.set({ id: 1, name: payload.sub || '', email: payload.sub || '' });
-        }
+        this.getProfile().subscribe({
+          error: (err) => {
+            if (err.status === 401) {
+              this.logout();
+            }
+          }
+        });
       }
     }
   }
 
-  login(email: string, password: string) {
+  login(email: string, password: string, rememberMe: boolean = false) {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
       tap(res => {
-        if (isPlatformBrowser(this.platformId)) {
-          localStorage.setItem(this.tokenKey, res.token);
-        }
-        this._token.set(res.token);
-        this.user.set({ id: 1, name: email, email });
+        this.setToken(res.token, rememberMe);
+        this.getProfile().subscribe();
         this.router.navigate(['/']);
       })
     );
   }
 
-  register(email: string, password: string) {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, { email, password }).pipe(
+  register(email: string, password: string, firstName: string, lastName: string, rememberMe: boolean = false) {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, { email, password, firstName, lastName }).pipe(
       tap(res => {
-        if (isPlatformBrowser(this.platformId)) {
-          localStorage.setItem(this.tokenKey, res.token);
-        }
-        this._token.set(res.token);
-        this.user.set({ id: 1, name: email, email });
+        this.setToken(res.token, rememberMe);
+        this.getProfile().subscribe();
         this.router.navigate(['/']);
       })
     );
@@ -68,6 +64,7 @@ export class AuthService {
   logout() {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(this.tokenKey);
+      sessionStorage.removeItem(this.tokenKey);
     }
     this._token.set(null);
     this.user.set(null);
@@ -76,6 +73,30 @@ export class AuthService {
 
   getToken(): string | null {
     return this._token();
+  }
+
+  getProfile() {
+    return this.http.get<User>(`${this.usersUrl}/me`).pipe(
+      tap(user => this.user.set(user))
+    );
+  }
+
+  updateProfile(data: UpdateProfileRequest) {
+    return this.http.put<User>(`${this.usersUrl}/me`, data).pipe(
+      tap(user => this.user.set(user))
+    );
+  }
+
+  changePassword(data: ChangePasswordRequest) {
+    return this.http.put<{ message: string }>(`${this.usersUrl}/me/change-password`, data);
+  }
+
+  forgotPassword(email: string) {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/forgot-password`, null, { params: { email } });
+  }
+
+  resetPassword(data: ResetPasswordRequest) {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/reset-password`, data);
   }
 
   isAdmin = computed(() => {
@@ -91,6 +112,16 @@ export class AuthService {
       return false;
     });
   });
+
+  private setToken(token: string, rememberMe: boolean = false) {
+    if (isPlatformBrowser(this.platformId)) {
+      const storage = rememberMe ? localStorage : sessionStorage;
+      storage.setItem(this.tokenKey, token);
+      const otherStorage = rememberMe ? sessionStorage : localStorage;
+      otherStorage.removeItem(this.tokenKey);
+    }
+    this._token.set(token);
+  }
 
   private decodeToken(token: string): any {
     try {

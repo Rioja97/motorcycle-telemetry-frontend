@@ -13,7 +13,6 @@ export class GarageCardComponent {
   @Input() status: 'ok' | 'warning' | 'critical' = 'ok';
   @Input() alertCount: number = 0;
   @Output() navigate = new EventEmitter<number>();
-  @Output() delete = new EventEmitter<number>();
 
   goToDetail() {
     this.navigate.emit(this.motorbike.id);

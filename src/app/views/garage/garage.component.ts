@@ -52,10 +52,13 @@ export class GarageComponent {
 
   constructor() {
     effect(() => {
-      if (this.authService.isAdmin()) {
-        this.motorbikeService.loadAllMotorbikes();
-      } else {
-        this.motorbikeService.loadMyMotorbikes();
+      const user = this.authService.user();
+      if (user) {
+        if (this.authService.isAdmin()) {
+          this.motorbikeService.loadAllMotorbikes();
+        } else {
+          this.motorbikeService.loadMyMotorbikes();
+        }
       }
     });
 

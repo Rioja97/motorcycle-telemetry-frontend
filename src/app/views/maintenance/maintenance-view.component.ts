@@ -79,21 +79,21 @@ export class MaintenanceViewComponent {
 
   loadMotorbikes() {
     this.loadingMotorbikes.set(true);
-    if (this.authService.isAdmin()) {
-      this.motorbikeService.loadAllMotorbikes();
-      effect(() => {
-        const all = this.motorbikeService.allMotorbikes();
-        const email = this.authService.user()?.email;
-        this.motorbikes.set(all.filter(b => b.userEmail === email));
+    effect(() => {
+      const user = this.authService.user();
+      if (user) {
+        if (this.authService.isAdmin()) {
+          this.motorbikeService.loadAllMotorbikes();
+          const all = this.motorbikeService.allMotorbikes();
+          const email = user.email;
+          this.motorbikes.set(all.filter(b => b.userEmail === email));
+        } else {
+          this.motorbikeService.loadMyMotorbikes();
+          this.motorbikes.set(this.motorbikeService.motorbikes());
+        }
         this.loadingMotorbikes.set(false);
-      });
-    } else {
-      this.motorbikeService.loadMyMotorbikes();
-      effect(() => {
-        this.motorbikes.set(this.motorbikeService.motorbikes());
-        this.loadingMotorbikes.set(false);
-      });
-    }
+      }
+    });
   }
 
   loadHistory() {

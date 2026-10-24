@@ -1,10 +1,10 @@
-import { Injectable, signal, inject, computed, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable, signal, inject, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { tap, catchError, of } from 'rxjs';
 import { User, UpdateProfileRequest, ChangePasswordRequest, ResetPasswordRequest } from '../models/user.model';
+import { TokenStorageService } from './token-storage.service';
 
 interface AuthResponse {
   token: string;
@@ -14,8 +14,7 @@ interface AuthResponse {
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  private platformId = inject(PLATFORM_ID);
-  private readonly tokenKey = 'auth_token';
+  private tokenStorage = inject(TokenStorageService);
   private apiUrl = `${environment.apiUrl}/auth`;
   private usersUrl = `${environment.apiUrl}/users`;
 
@@ -23,21 +22,18 @@ export class AuthService {
   private _token = signal<string | null>(null);
 
   constructor() {
-    if (isPlatformBrowser(this.platformId)) {
-      let token = localStorage.getItem(this.tokenKey);
-      if (!token) {
-        token = sessionStorage.getItem(this.tokenKey);
-      }
-      this._token.set(token);
-      if (token) {
-        this.getProfile().subscribe({
-          error: (err) => {
-            if (err.status === 401) {
-              this.logout();
-            }
+    const token = this.tokenStorage.getToken();
+    this._token.set(token);
+    if (token) {
+      this.getProfile().subscribe({
+        error: (err) => {
+          if (err.status === 401) {
+            this.logout();
+          } else {
+            console.error('Error loading profile:', err);
           }
-        });
-      }
+        }
+      });
     }
   }
 
@@ -62,10 +58,7 @@ export class AuthService {
   }
 
   logout() {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem(this.tokenKey);
-      sessionStorage.removeItem(this.tokenKey);
-    }
+    this.tokenStorage.clearToken();
     this._token.set(null);
     this.user.set(null);
     this.router.navigate(['/login']);
@@ -114,12 +107,7 @@ export class AuthService {
   });
 
   private setToken(token: string, rememberMe: boolean = false) {
-    if (isPlatformBrowser(this.platformId)) {
-      const storage = rememberMe ? localStorage : sessionStorage;
-      storage.setItem(this.tokenKey, token);
-      const otherStorage = rememberMe ? sessionStorage : localStorage;
-      otherStorage.removeItem(this.tokenKey);
-    }
+    this.tokenStorage.setToken(token, rememberMe);
     this._token.set(token);
   }
 
